@@ -1,0 +1,5 @@
+author_id = "sys"
+app_id = "remover"
+author_name = "System"
+app_name = "App Remover"
+lang = "go"
