@@ -6,14 +6,25 @@ import (
 	"github.com/firefly-zero/firefly-go/firefly"
 )
 
+type Kind uint8
+
+const (
+	KindROM   Kind = 1
+	KindData  Kind = 2
+	KindShots Kind = 3
+)
+
+type Line struct {
+	kind     Kind
+	selected bool
+}
+
 type State struct {
 	settings firefly.Settings
 	authorID string
 	appID    string
 	font     firefly.Font
-
-	romExists  bool
-	dataExists bool
+	lines    []Line
 }
 
 var state State
@@ -37,8 +48,15 @@ func boot() {
 	state.authorID = authorID
 	state.appID = appID
 
-	state.romExists = firefly.FileExists("roms/" + authorID + "/" + appID + "/_bin")
-	state.dataExists = firefly.FileExists("data/" + authorID + "/" + appID + "/stats")
+	if firefly.FileExists("roms/" + authorID + "/" + appID + "/_bin") {
+		state.lines = append(state.lines, Line{kind: KindROM})
+	}
+	if firefly.FileExists("data/" + authorID + "/" + appID + "/stats") {
+		state.lines = append(state.lines, Line{kind: KindData})
+	}
+	if firefly.FileExists("data/" + authorID + "/" + appID + "/shots/001.ffs") {
+		state.lines = append(state.lines, Line{kind: KindShots})
+	}
 }
 
 func update() {
@@ -52,11 +70,15 @@ func render() {
 		drawCentered(msgNoTarget())
 		return
 	}
-	if !state.romExists && !state.dataExists {
+	if len(state.lines) == 0 {
 		drawCentered(msgAlreadyRemoved())
 		return
 	}
-	drawCentered("TODO")
+
+	drawHeader(1, "What do you want to delete?")
+	for i, line := range state.lines {
+		drawLine(i, line)
+	}
 }
 
 func drawBackgroundGrid() {
@@ -113,4 +135,36 @@ func drawCentered(text string) {
 		firefly.P(x, y),
 		state.settings.Theme.Primary,
 	)
+}
+
+func drawHeader(line int, text string) {
+	firefly.DrawText(
+		text,
+		state.font,
+		firefly.P(20, 20+state.font.CharHeight()*line),
+		state.settings.Theme.Accent,
+	)
+}
+
+func drawLine(i int, line Line) {
+	text := lineMsg(line.kind)
+	point := firefly.P(30, 20+state.font.CharHeight()*(i+2))
+	firefly.DrawText(
+		text,
+		state.font,
+		point,
+		state.settings.Theme.Primary,
+	)
+}
+
+func lineMsg(kind Kind) string {
+	switch kind {
+	case KindData:
+		return msgData()
+	case KindROM:
+		return msgROM()
+	case KindShots:
+		return msgShots()
+	}
+	return ""
 }
