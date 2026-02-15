@@ -93,7 +93,7 @@ func drawBackgroundBox() {
 }
 
 func drawNoTarget() {
-	text := "no target selected"
+	text := msgNoTarget()
 	x := (firefly.Width - state.font.LineWidth(text)) / 2
 	y := (firefly.Height - state.font.CharHeight()) / 2
 	firefly.DrawText(
@@ -102,4 +102,32 @@ func drawNoTarget() {
 		firefly.P(x, y),
 		state.settings.Theme.Primary,
 	)
+}
+
+func msgNoTarget() string {
+	switch state.settings.Language {
+	case firefly.Dutch:
+		return "no app selected" // TODO
+	case firefly.French:
+		return "no app selected" // TODO
+	case firefly.German:
+		return "no app selected" // TODO
+	case firefly.Italian:
+		return "no app selected" // TODO
+	case firefly.Polish:
+		return "no app selected" // TODO
+	case firefly.Russian:
+		return "приложение не выбрано"
+	case firefly.Spanish:
+		return "no app selected" // TODO
+	case firefly.Swedish:
+		return "no app selected" // TODO
+	case firefly.TokiPona:
+		return "no app selected" // TODO
+	case firefly.Turkish:
+		return "no app selected" // TODO
+	case firefly.Ukrainian:
+		return "no app selected" // TODO
+	}
+	return "no app selected"
 }
