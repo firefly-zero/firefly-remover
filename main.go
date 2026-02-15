@@ -147,13 +147,31 @@ func drawHeader(line int, text string) {
 }
 
 func drawOption(i int, option Options) {
+	theme := state.settings.Theme
 	text := msgOption(option.kind)
 	point := firefly.P(30, 20+state.font.CharHeight()*(i+2))
 	firefly.DrawText(
 		text,
 		state.font,
 		point,
-		state.settings.Theme.Primary,
+		theme.Primary,
+	)
+
+	h := state.font.CharHeight()
+	point.Y -= h
+	{
+		switchPoint := point
+		if option.selected {
+			switchPoint.X += h
+		}
+		firefly.DrawCircle(switchPoint, h, firefly.Solid(theme.Accent))
+	}
+
+	firefly.DrawRoundedRect(
+		point,
+		firefly.S(h*2, h),
+		firefly.S(h/2, h/2),
+		firefly.Outlined(theme.Primary, 1),
 	)
 }
 
