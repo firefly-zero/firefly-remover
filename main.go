@@ -14,7 +14,7 @@ const (
 	KindShots Kind = 3
 )
 
-type Line struct {
+type Options struct {
 	kind     Kind
 	selected bool
 }
@@ -24,7 +24,7 @@ type State struct {
 	authorID string
 	appID    string
 	font     firefly.Font
-	lines    []Line
+	options  []Options
 }
 
 var state State
@@ -49,13 +49,13 @@ func boot() {
 	state.appID = appID
 
 	if firefly.FileExists("roms/" + authorID + "/" + appID + "/_bin") {
-		state.lines = append(state.lines, Line{kind: KindROM})
+		state.options = append(state.options, Options{kind: KindROM})
 	}
 	if firefly.FileExists("data/" + authorID + "/" + appID + "/stats") {
-		state.lines = append(state.lines, Line{kind: KindData})
+		state.options = append(state.options, Options{kind: KindData})
 	}
 	if firefly.FileExists("data/" + authorID + "/" + appID + "/shots/001.ffs") {
-		state.lines = append(state.lines, Line{kind: KindShots})
+		state.options = append(state.options, Options{kind: KindShots})
 	}
 }
 
@@ -70,14 +70,14 @@ func render() {
 		drawCentered(msgNoTarget())
 		return
 	}
-	if len(state.lines) == 0 {
+	if len(state.options) == 0 {
 		drawCentered(msgAlreadyRemoved())
 		return
 	}
 
 	drawHeader(1, "What do you want to delete?")
-	for i, line := range state.lines {
-		drawLine(i, line)
+	for i, option := range state.options {
+		drawOption(i, option)
 	}
 }
 
@@ -146,8 +146,8 @@ func drawHeader(line int, text string) {
 	)
 }
 
-func drawLine(i int, line Line) {
-	text := lineMsg(line.kind)
+func drawOption(i int, option Options) {
+	text := msgOption(option.kind)
 	point := firefly.P(30, 20+state.font.CharHeight()*(i+2))
 	firefly.DrawText(
 		text,
@@ -157,7 +157,7 @@ func drawLine(i int, line Line) {
 	)
 }
 
-func lineMsg(kind Kind) string {
+func msgOption(kind Kind) string {
 	switch kind {
 	case KindData:
 		return msgData()
