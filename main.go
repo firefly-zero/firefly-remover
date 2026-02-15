@@ -11,6 +11,9 @@ type State struct {
 	authorID string
 	appID    string
 	font     firefly.Font
+
+	romExists  bool
+	dataExists bool
 }
 
 var state State
@@ -27,11 +30,15 @@ func boot() {
 	state.font = firefly.LoadFont("font", nil)
 
 	target := firefly.LoadFile("target", nil)
-	if target.Raw != nil {
-		authorID, appID, _ := strings.Cut(string(target.Raw), ".")
-		state.authorID = authorID
-		state.appID = appID
+	if target.Raw == nil {
+		return
 	}
+	authorID, appID, _ := strings.Cut(string(target.Raw), ".")
+	state.authorID = authorID
+	state.appID = appID
+
+	state.romExists = firefly.FileExists("roms/" + authorID + "/" + appID + "/_bin")
+	state.dataExists = firefly.FileExists("data/" + authorID + "/" + appID + "/stats")
 }
 
 func update() {
@@ -42,9 +49,14 @@ func render() {
 	drawBackgroundGrid()
 	drawBackgroundBox()
 	if state.authorID == "" {
-		drawNoTarget()
+		drawCentered(msgNoTarget())
 		return
 	}
+	if !state.romExists && !state.dataExists {
+		drawCentered(msgAlreadyRemoved())
+		return
+	}
+	drawCentered("TODO")
 }
 
 func drawBackgroundGrid() {
@@ -92,8 +104,7 @@ func drawBackgroundBox() {
 	)
 }
 
-func drawNoTarget() {
-	text := msgNoTarget()
+func drawCentered(text string) {
 	x := (firefly.Width - state.font.LineWidth(text)) / 2
 	y := (firefly.Height - state.font.CharHeight()) / 2
 	firefly.DrawText(
@@ -130,4 +141,32 @@ func msgNoTarget() string {
 		return "no app selected" // TODO
 	}
 	return "no app selected"
+}
+
+func msgAlreadyRemoved() string {
+	switch state.settings.Language {
+	case firefly.Dutch:
+		return "app already removed" // TODO
+	case firefly.French:
+		return "app already removed" // TODO
+	case firefly.German:
+		return "app already removed" // TODO
+	case firefly.Italian:
+		return "app already removed" // TODO
+	case firefly.Polish:
+		return "app already removed" // TODO
+	case firefly.Russian:
+		return "приложение уже удалено"
+	case firefly.Spanish:
+		return "app already removed" // TODO
+	case firefly.Swedish:
+		return "app already removed" // TODO
+	case firefly.TokiPona:
+		return "app already removed" // TODO
+	case firefly.Turkish:
+		return "app already removed" // TODO
+	case firefly.Ukrainian:
+		return "app already removed" // TODO
+	}
+	return "app already removed"
 }
