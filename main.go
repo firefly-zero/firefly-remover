@@ -39,15 +39,20 @@ func update() {
 }
 
 func render() {
-	firefly.ClearScreen(firefly.ColorWhite)
 	drawBackgroundGrid()
 	drawBackgroundBox()
+	if state.authorID == "" {
+		drawNoTarget()
+		return
+	}
 }
 
 func drawBackgroundGrid() {
 	const cellSize = 10
-	firefly.ClearScreen(firefly.ColorWhite)
-	lineStyle := firefly.L(firefly.ColorLightGray, 1)
+
+	theme := state.settings.Theme
+	firefly.ClearScreen(theme.BG)
+	lineStyle := firefly.L(theme.Secondary, 1)
 	for x := cellSize; x < firefly.Width; x += cellSize {
 		firefly.DrawLine(
 			firefly.P(x, 0),
@@ -66,21 +71,35 @@ func drawBackgroundGrid() {
 
 func drawBackgroundBox() {
 	const margin = 15
+
+	theme := state.settings.Theme
 	size := firefly.S(firefly.Width-margin*2, firefly.Height-margin*2)
 	firefly.DrawRoundedRect(
 		firefly.P(margin+1, margin+1),
 		size,
 		firefly.S(4, 4),
-		firefly.Solid(firefly.ColorBlack),
+		firefly.Solid(theme.Primary),
 	)
 	firefly.DrawRoundedRect(
 		firefly.P(margin, margin),
 		size,
 		firefly.S(4, 4),
 		firefly.Style{
-			FillColor:   firefly.ColorWhite,
-			StrokeColor: firefly.ColorBlack,
+			FillColor:   theme.BG,
+			StrokeColor: theme.Primary,
 			StrokeWidth: 1,
 		},
+	)
+}
+
+func drawNoTarget() {
+	text := "no target selected"
+	x := (firefly.Width - state.font.LineWidth(text)) / 2
+	y := (firefly.Height - state.font.CharHeight()) / 2
+	firefly.DrawText(
+		text,
+		state.font,
+		firefly.P(x, y),
+		state.settings.Theme.Primary,
 	)
 }
