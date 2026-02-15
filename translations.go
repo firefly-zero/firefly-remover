@@ -58,6 +58,34 @@ func msgAlreadyRemoved() string {
 	return "app already removed"
 }
 
+func msgRemoved() string {
+	switch state.settings.Language {
+	case firefly.Dutch:
+		return "app is removed" // TODO
+	case firefly.French:
+		return "app is removed" // TODO
+	case firefly.German:
+		return "app is removed" // TODO
+	case firefly.Italian:
+		return "app is removed" // TODO
+	case firefly.Polish:
+		return "app is removed" // TODO
+	case firefly.Russian:
+		return "приложение удалено"
+	case firefly.Spanish:
+		return "app is removed" // TODO
+	case firefly.Swedish:
+		return "app is removed" // TODO
+	case firefly.TokiPona:
+		return "app is removed" // TODO
+	case firefly.Turkish:
+		return "app is removed" // TODO
+	case firefly.Ukrainian:
+		return "app is removed" // TODO
+	}
+	return "app is removed"
+}
+
 func msgROM() string {
 	switch state.settings.Language {
 	case firefly.Dutch:

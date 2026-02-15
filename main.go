@@ -25,6 +25,7 @@ type State struct {
 	appID    string
 	font     firefly.Font
 	options  []Options
+	removed  bool
 	cursor   int
 	dpad     firefly.DPad4
 	btns     firefly.Buttons
@@ -97,6 +98,10 @@ func handleButtons() {
 		return
 	}
 	if released.S || released.E {
+		if state.removed {
+			firefly.Quit()
+			return
+		}
 		if state.cursor < len(state.options) {
 			state.options[state.cursor].selected = true
 		} else {
@@ -106,6 +111,31 @@ func handleButtons() {
 }
 
 func removeApp() {
+	for _, option := range state.options {
+		if !option.selected {
+			continue
+		}
+		switch option.kind {
+		case KindROM:
+			removeROM()
+		case KindData:
+			removeData()
+		case KindShots:
+			removeShots()
+		}
+	}
+	state.removed = true
+}
+
+func removeROM() {
+	// ...
+}
+
+func removeData() {
+	// ...
+}
+
+func removeShots() {
 	// ...
 }
 
@@ -118,6 +148,10 @@ func render() {
 	}
 	if len(state.options) == 0 {
 		drawCentered(msgAlreadyRemoved())
+		return
+	}
+	if state.removed {
+		drawCentered(msgRemoved())
 		return
 	}
 
