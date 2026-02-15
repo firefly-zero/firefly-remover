@@ -25,6 +25,9 @@ type State struct {
 	appID    string
 	font     firefly.Font
 	options  []Options
+	cursor   int
+	dpad     firefly.DPad4
+	btns     firefly.Buttons
 }
 
 var state State
@@ -60,6 +63,49 @@ func boot() {
 }
 
 func update() {
+	handlePad()
+	handleButtons()
+}
+
+func handlePad() {
+	me := firefly.GetMe()
+	pad, _ := firefly.ReadPad(me)
+	dpad := pad.DPad4()
+	released := dpad.JustReleased(state.dpad)
+	state.dpad = dpad
+	switch released {
+	case firefly.DPad4Down:
+		if state.cursor < len(state.options)-1 {
+			state.cursor++
+		}
+	case firefly.DPad4Up:
+		if state.cursor > 0 {
+			state.cursor--
+		}
+	case firefly.DPad4Left:
+	case firefly.DPad4Right:
+	}
+}
+
+func handleButtons() {
+	me := firefly.GetMe()
+	btns := firefly.ReadButtons(me)
+	released := btns.JustReleased(state.btns)
+	state.btns = btns
+	if released.W {
+		firefly.Quit()
+		return
+	}
+	if released.S || released.E {
+		if state.cursor < len(state.options) {
+			state.options[state.cursor].selected = true
+		} else {
+			removeApp()
+		}
+	}
+}
+
+func removeApp() {
 	// ...
 }
 
