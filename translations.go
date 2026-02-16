@@ -169,3 +169,59 @@ func msgShots() string {
 	}
 	return "screenshots"
 }
+
+func msgCancel() string {
+	switch state.settings.Language {
+	case firefly.Dutch:
+		return "cancel" // TODO
+	case firefly.French:
+		return "cancel" // TODO
+	case firefly.German:
+		return "cancel" // TODO
+	case firefly.Italian:
+		return "cancel" // TODO
+	case firefly.Polish:
+		return "cancel" // TODO
+	case firefly.Russian:
+		return "отменить"
+	case firefly.Spanish:
+		return "cancel" // TODO
+	case firefly.Swedish:
+		return "cancel" // TODO
+	case firefly.TokiPona:
+		return "cancel" // TODO
+	case firefly.Turkish:
+		return "cancel" // TODO
+	case firefly.Ukrainian:
+		return "cancel" // TODO
+	}
+	return "cancel"
+}
+
+func msgRemove() string {
+	switch state.settings.Language {
+	case firefly.Dutch:
+		return "remove" // TODO
+	case firefly.French:
+		return "remove" // TODO
+	case firefly.German:
+		return "remove" // TODO
+	case firefly.Italian:
+		return "remove" // TODO
+	case firefly.Polish:
+		return "remove" // TODO
+	case firefly.Russian:
+		return "удалить"
+	case firefly.Spanish:
+		return "remove" // TODO
+	case firefly.Swedish:
+		return "remove" // TODO
+	case firefly.TokiPona:
+		return "remove" // TODO
+	case firefly.Turkish:
+		return "remove" // TODO
+	case firefly.Ukrainian:
+		return "remove" // TODO
+	}
+	return "remove"
+}

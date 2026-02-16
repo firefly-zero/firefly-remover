@@ -88,7 +88,7 @@ func handlePad() {
 	state.dpad = dpad
 	switch released {
 	case firefly.DPad4Down:
-		if state.cursor < len(state.options)-1 {
+		if state.cursor < len(state.options) {
 			state.cursor++
 		}
 	case firefly.DPad4Up:
@@ -118,9 +118,22 @@ func handleButtons() {
 			option := &state.options[state.cursor]
 			option.selected = !option.selected
 		} else {
-			removeApp()
+			if anySelected() {
+				removeApp()
+			} else {
+				firefly.Quit()
+			}
 		}
 	}
+}
+
+func anySelected() bool {
+	for _, option := range state.options {
+		if option.selected {
+			return true
+		}
+	}
+	return false
 }
 
 func removeApp() {
@@ -173,6 +186,7 @@ func render() {
 	for i, option := range state.options {
 		drawOption(i, option)
 	}
+	drawButton()
 }
 
 func drawBackgroundGrid() {
@@ -270,6 +284,23 @@ func drawOption(i int, option Options) {
 		firefly.S(h*2, h),
 		firefly.S(h/2, h/2),
 		firefly.Outlined(theme.Primary, 1),
+	)
+}
+
+func drawButton() {
+	var msg string
+	if anySelected() {
+		msg = msgRemove()
+	} else {
+		msg = msgCancel()
+	}
+	lineH := state.font.CharHeight() + 4
+	lineNo := len(state.options) + 2
+	firefly.DrawText(
+		msg,
+		state.font,
+		firefly.P(contentMargin, contentMargin+lineH*lineNo-1),
+		state.settings.Theme.Accent,
 	)
 }
 
