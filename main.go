@@ -57,12 +57,20 @@ func boot() {
 	if sudo.FileExists("roms/" + authorID + "/" + appID + "/_bin") {
 		state.options = append(state.options, Options{kind: KindROM})
 	}
-	if sudo.FileExists("data/" + authorID + "/" + appID + "/stats") {
+	if hasData(authorID, appID) {
 		state.options = append(state.options, Options{kind: KindData})
 	}
 	if sudo.FileExists("data/" + authorID + "/" + appID + "/shots/001.ffs") {
 		state.options = append(state.options, Options{kind: KindShots})
 	}
+}
+
+func hasData(authorID, appID string) bool {
+	if sudo.FileExists("data/" + authorID + "/" + appID + "/stash") {
+		return true
+	}
+	dataFiles := sudo.ListFiles("data/" + authorID + "/" + appID + "/etc")
+	return len(dataFiles) != 0
 }
 
 func update() {
