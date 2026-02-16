@@ -7,6 +7,8 @@ import (
 	"github.com/firefly-zero/firefly-go/firefly/sudo"
 )
 
+const contentMargin = 25
+
 type Kind uint8
 
 const (
@@ -166,6 +168,7 @@ func render() {
 		return
 	}
 
+	drawCursor()
 	drawHeader("What do you want to delete?")
 	for i, option := range state.options {
 		drawOption(i, option)
@@ -229,23 +232,20 @@ func drawCentered(text string) {
 }
 
 func drawHeader(text string) {
-	const margin = 25
 	firefly.DrawText(
 		text,
 		state.font,
-		firefly.P(margin, margin+state.font.CharHeight()),
+		firefly.P(contentMargin, contentMargin+state.font.CharHeight()),
 		state.settings.Theme.Accent,
 	)
 }
 
 func drawOption(i int, option Options) {
-	const margin = 25
 	h := state.font.CharHeight()
-
 	theme := state.settings.Theme
 	text := msgOption(option.kind)
-	lineH := state.font.CharHeight() + 2
-	point := firefly.P(margin, margin+lineH*(i+2))
+	lineH := state.font.CharHeight() + 4
+	point := firefly.P(contentMargin, contentMargin+lineH*(i+2)-1)
 	firefly.DrawText(
 		text,
 		state.font,
@@ -253,8 +253,8 @@ func drawOption(i int, option Options) {
 		theme.Primary,
 	)
 
-	point.X = firefly.Width - margin - h*2
-	point.Y -= h - 2
+	point.X = firefly.Width - contentMargin - h*2
+	point.Y -= h - 3
 	{
 		switchPoint := point
 		color := theme.Secondary
@@ -271,6 +271,27 @@ func drawOption(i int, option Options) {
 		firefly.S(h/2, h/2),
 		firefly.Outlined(theme.Primary, 1),
 	)
+}
+
+func drawCursor() {
+	const margin = contentMargin - 5
+	theme := state.settings.Theme
+	lineH := state.font.CharHeight() + 4
+	point := firefly.P(margin, contentMargin+lineH*(state.cursor+1)+4)
+	size := firefly.S(firefly.Width-margin*2, lineH)
+	corners := firefly.S(4, 4)
+
+	{
+		point := firefly.P(point.X+1, point.Y+1)
+		firefly.DrawRoundedRect(point, size, corners, firefly.Solid(theme.Primary))
+	}
+
+	style := firefly.Style{
+		FillColor:   theme.BG,
+		StrokeColor: theme.Primary,
+		StrokeWidth: 1,
+	}
+	firefly.DrawRoundedRect(point, size, corners, style)
 }
 
 func msgOption(kind Kind) string {
