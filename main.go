@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/firefly-zero/firefly-go/firefly"
+	"github.com/firefly-zero/firefly-go/firefly/sudo"
 )
 
 type Kind uint8
@@ -44,21 +45,22 @@ func boot() {
 	state.settings = firefly.GetSettings(me)
 	state.font = firefly.LoadFont("font", nil)
 
-	target := firefly.LoadFile("target", nil)
-	if target.Raw == nil {
+	targetFile := firefly.LoadFile("target", nil)
+	if targetFile.Raw == nil {
 		return
 	}
-	authorID, appID, _ := strings.Cut(string(target.Raw), ".")
+	target := strings.Trim(string(targetFile.Raw), " \n")
+	authorID, appID, _ := strings.Cut(target, ".")
 	state.authorID = authorID
 	state.appID = appID
 
-	if firefly.FileExists("roms/" + authorID + "/" + appID + "/_bin") {
+	if sudo.FileExists("roms/" + authorID + "/" + appID + "/_bin") {
 		state.options = append(state.options, Options{kind: KindROM})
 	}
-	if firefly.FileExists("data/" + authorID + "/" + appID + "/stats") {
+	if sudo.FileExists("data/" + authorID + "/" + appID + "/stats") {
 		state.options = append(state.options, Options{kind: KindData})
 	}
-	if firefly.FileExists("data/" + authorID + "/" + appID + "/shots/001.ffs") {
+	if sudo.FileExists("data/" + authorID + "/" + appID + "/shots/001.ffs") {
 		state.options = append(state.options, Options{kind: KindShots})
 	}
 }
@@ -103,7 +105,8 @@ func handleButtons() {
 			return
 		}
 		if state.cursor < len(state.options) {
-			state.options[state.cursor].selected = true
+			option := &state.options[state.cursor]
+			option.selected = !option.selected
 		} else {
 			removeApp()
 		}
@@ -155,7 +158,7 @@ func render() {
 		return
 	}
 
-	drawHeader(1, "What do you want to delete?")
+	drawHeader("What do you want to delete?")
 	for i, option := range state.options {
 		drawOption(i, option)
 	}
@@ -217,19 +220,24 @@ func drawCentered(text string) {
 	)
 }
 
-func drawHeader(line int, text string) {
+func drawHeader(text string) {
+	const margin = 25
 	firefly.DrawText(
 		text,
 		state.font,
-		firefly.P(20, 20+state.font.CharHeight()*line),
+		firefly.P(margin, margin+state.font.CharHeight()),
 		state.settings.Theme.Accent,
 	)
 }
 
 func drawOption(i int, option Options) {
+	const margin = 25
+	h := state.font.CharHeight()
+
 	theme := state.settings.Theme
 	text := msgOption(option.kind)
-	point := firefly.P(30, 20+state.font.CharHeight()*(i+2))
+	lineH := state.font.CharHeight() + 2
+	point := firefly.P(margin, margin+lineH*(i+2))
 	firefly.DrawText(
 		text,
 		state.font,
@@ -237,14 +245,16 @@ func drawOption(i int, option Options) {
 		theme.Primary,
 	)
 
-	h := state.font.CharHeight()
-	point.Y -= h
+	point.X = firefly.Width - margin - h*2
+	point.Y -= h - 2
 	{
 		switchPoint := point
+		color := theme.Secondary
 		if option.selected {
 			switchPoint.X += h
+			color = theme.Accent
 		}
-		firefly.DrawCircle(switchPoint, h, firefly.Solid(theme.Accent))
+		firefly.DrawCircle(switchPoint, h, firefly.Solid(color))
 	}
 
 	firefly.DrawRoundedRect(
