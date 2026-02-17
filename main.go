@@ -62,7 +62,7 @@ func boot() {
 	if hasData(authorID, appID) {
 		state.options = append(state.options, Options{kind: KindData})
 	}
-	if sudo.FileExists("data/" + authorID + "/" + appID + "/shots/001.ffs") {
+	if hasShots(authorID, appID) {
 		state.options = append(state.options, Options{kind: KindShots})
 	}
 }
@@ -72,6 +72,11 @@ func hasData(authorID, appID string) bool {
 		return true
 	}
 	dataFiles := sudo.ListFiles("data/" + authorID + "/" + appID + "/etc")
+	return len(dataFiles) != 0
+}
+
+func hasShots(authorID, appID string) bool {
+	dataFiles := sudo.ListFiles("data/" + authorID + "/" + appID + "/shots")
 	return len(dataFiles) != 0
 }
 
@@ -137,32 +142,53 @@ func anySelected() bool {
 }
 
 func removeApp() {
+	authorID := state.authorID
+	appID := state.appID
+
+	// Delete ROM and detect if we can remove the whole data dir
+	// or only some subdirs.
+	delAllData := true
+	delEtc := false
+	delShots := false
 	for _, option := range state.options {
-		if !option.selected {
+		if option.kind == KindROM {
+			if option.selected {
+				sudo.RemoveDir("roms/" + authorID + "/" + appID + "/_bin")
+			}
 			continue
 		}
-		switch option.kind {
-		case KindROM:
-			removeROM()
-		case KindData:
-			removeData()
-		case KindShots:
-			removeShots()
+		if !option.selected {
+			delAllData = false
+			continue
+		}
+		if option.kind == KindData {
+			delEtc = true
+		}
+		if option.kind == KindShots {
+			delShots = true
 		}
 	}
+
 	state.removed = true
-}
 
-func removeROM() {
-	// ...
-}
+	if delAllData {
+		sudo.RemoveDir("data/" + authorID + "/" + appID)
+		return
+	}
 
-func removeData() {
-	// ...
-}
+	// Delete the app data and stash.
+	if delEtc {
+		sudo.RemoveDir("data/" + authorID + "/" + appID + "/etc")
+		stashPath := "data/" + authorID + "/" + appID + "/stash"
+		if sudo.FileExists(stashPath) {
+			sudo.RemoveFile(stashPath)
+		}
+	}
 
-func removeShots() {
-	// ...
+	// Delete screenshots.
+	if delShots {
+		sudo.RemoveDir("data/" + authorID + "/" + appID + "/shots")
+	}
 }
 
 func render() {
