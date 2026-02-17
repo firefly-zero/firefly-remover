@@ -7,7 +7,7 @@ import (
 	"github.com/firefly-zero/firefly-go/firefly/sudo"
 )
 
-const contentMargin = 25
+const contentMargin = 20
 
 type Kind uint8
 
@@ -190,7 +190,7 @@ func render() {
 }
 
 func drawBackgroundGrid() {
-	const cellSize = 10
+	const cellSize = 8
 
 	theme := state.settings.Theme
 	firefly.ClearScreen(theme.BG)
@@ -212,7 +212,7 @@ func drawBackgroundGrid() {
 }
 
 func drawBackgroundBox() {
-	const margin = 15
+	const margin = 12
 
 	theme := state.settings.Theme
 	size := firefly.S(firefly.Width-margin*2, firefly.Height-margin*2)
@@ -249,7 +249,7 @@ func drawHeader(text string) {
 	firefly.DrawText(
 		text,
 		state.font,
-		firefly.P(contentMargin, contentMargin+state.font.CharHeight()),
+		firefly.P(contentMargin, contentMargin+state.font.CharHeight()-4),
 		state.settings.Theme.Accent,
 	)
 }
@@ -259,7 +259,7 @@ func drawOption(i int, option Options) {
 	theme := state.settings.Theme
 	text := msgOption(option.kind)
 	lineH := state.font.CharHeight() + 4
-	point := firefly.P(contentMargin, contentMargin+lineH*(i+2)-1)
+	point := firefly.P(contentMargin, contentMargin+lineH*(i+2)-8)
 	firefly.DrawText(
 		text,
 		state.font,
@@ -299,16 +299,16 @@ func drawButton() {
 	firefly.DrawText(
 		msg,
 		state.font,
-		firefly.P(contentMargin, contentMargin+lineH*lineNo-1),
+		firefly.P(contentMargin, contentMargin+lineH*lineNo-8),
 		state.settings.Theme.Accent,
 	)
 }
 
 func drawCursor() {
-	const margin = contentMargin - 5
+	const margin = contentMargin - 4
 	theme := state.settings.Theme
 	lineH := state.font.CharHeight() + 4
-	point := firefly.P(margin, contentMargin+lineH*(state.cursor+1)+4)
+	point := firefly.P(margin, contentMargin+lineH*(state.cursor+1)-3)
 	size := firefly.S(firefly.Width-margin*2, lineH)
 	corners := firefly.S(4, 4)
 
