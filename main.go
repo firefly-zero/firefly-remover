@@ -153,7 +153,7 @@ func removeApp() {
 	for _, option := range state.options {
 		if option.kind == KindROM {
 			if option.selected {
-				sudo.RemoveDir("roms/" + authorID + "/" + appID + "/_bin")
+				sudo.RemoveDir("roms/" + authorID + "/" + appID)
 			}
 			continue
 		}
