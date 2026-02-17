@@ -176,6 +176,8 @@ func removeApp() {
 		if option.kind == KindROM {
 			if option.selected {
 				sudo.RemoveDir("roms/" + authorID + "/" + appID)
+				// Reset launcher cache.
+				sudo.RemoveFile("data/sys/launcher/etc/metas")
 			}
 			continue
 		}
