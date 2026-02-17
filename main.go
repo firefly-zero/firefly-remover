@@ -7,7 +7,12 @@ import (
 	"github.com/firefly-zero/firefly-go/firefly/sudo"
 )
 
-const contentMargin = 20
+const (
+	// For how long to show messages on the screen before exiting.
+	defaultMsgTTL = 4 * 60
+	// The distance between the content text and screen borders.
+	contentMargin = 20
+)
 
 type Kind uint8
 
@@ -28,7 +33,8 @@ type State struct {
 	appID    string
 	font     firefly.Font
 	options  []Options
-	removed  bool
+	msg      string
+	msgTTL   int
 	cursor   int
 	dpad     firefly.DPad4
 	btns     firefly.Buttons
@@ -49,6 +55,8 @@ func boot() {
 
 	targetFile := firefly.LoadFile("target", nil)
 	if targetFile.Raw == nil {
+		state.msg = msgNoTarget()
+		state.msgTTL = defaultMsgTTL
 		return
 	}
 	target := strings.Trim(string(targetFile.Raw), " \n")
@@ -64,6 +72,10 @@ func boot() {
 	}
 	if hasShots(authorID, appID) {
 		state.options = append(state.options, Options{kind: KindShots})
+	}
+	if len(state.options) == 0 {
+		state.msg = msgAlreadyRemoved()
+		state.msgTTL = defaultMsgTTL
 	}
 }
 
@@ -81,6 +93,16 @@ func hasShots(authorID, appID string) bool {
 }
 
 func update() {
+	// Automatically exit if there is a message on the screen
+	// and we've been showing it for long enough.
+	if state.msg != "" {
+		if state.msgTTL == 0 {
+			firefly.Quit()
+			return
+		}
+		state.msgTTL--
+	}
+
 	handlePad()
 	handleButtons()
 }
@@ -115,7 +137,7 @@ func handleButtons() {
 		return
 	}
 	if released.S || released.E {
-		if state.removed {
+		if state.msg != "" {
 			firefly.Quit()
 			return
 		}
@@ -169,7 +191,8 @@ func removeApp() {
 		}
 	}
 
-	state.removed = true
+	state.msg = msgRemoved()
+	state.msgTTL = defaultMsgTTL
 
 	if delAllData {
 		sudo.RemoveDir("data/" + authorID + "/" + appID)
@@ -194,16 +217,8 @@ func removeApp() {
 func render() {
 	drawBackgroundGrid()
 	drawBackgroundBox()
-	if state.authorID == "" {
-		drawCentered(msgNoTarget())
-		return
-	}
-	if len(state.options) == 0 {
-		drawCentered(msgAlreadyRemoved())
-		return
-	}
-	if state.removed {
-		drawCentered(msgRemoved())
+	if state.msg != "" {
+		drawCentered(state.msg)
 		return
 	}
 
