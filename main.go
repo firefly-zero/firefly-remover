@@ -54,12 +54,12 @@ func boot() {
 	state.font = firefly.LoadFont("font", nil)
 
 	targetFile := firefly.LoadFile("target", nil)
-	if targetFile.Raw == nil {
+	if targetFile == nil {
 		state.msg = msgNoTarget()
 		state.msgTTL = defaultMsgTTL
 		return
 	}
-	target := strings.Trim(string(targetFile.Raw), " \n")
+	target := strings.Trim(string(targetFile), " \n")
 	authorID, appID, _ := strings.Cut(target, ".")
 	state.authorID = authorID
 	state.appID = appID
