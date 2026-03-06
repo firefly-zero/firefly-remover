@@ -14,6 +14,8 @@ func msgNoTarget() string {
 		return "no app selected" // TODO
 	case firefly.Polish:
 		return "no app selected" // TODO
+	case firefly.Romanian:
+		return "nicio aplicație selectată"
 	case firefly.Russian:
 		return "приложение не выбрано"
 	case firefly.Spanish:
@@ -42,6 +44,8 @@ func msgAlreadyRemoved() string {
 		return "app already removed" // TODO
 	case firefly.Polish:
 		return "app already removed" // TODO
+	case firefly.Romanian:
+		return "aplicație deja dezinstalată"
 	case firefly.Russian:
 		return "приложение уже удалено"
 	case firefly.Spanish:
@@ -70,6 +74,8 @@ func msgRemoved() string {
 		return "app is removed" // TODO
 	case firefly.Polish:
 		return "app is removed" // TODO
+	case firefly.Romanian:
+		return "aplicația e dezinstalată"
 	case firefly.Russian:
 		return "приложение удалено"
 	case firefly.Spanish:
@@ -98,6 +104,8 @@ func msgROM() string {
 		return "app ROM" // TODO
 	case firefly.Polish:
 		return "app ROM" // TODO
+	case firefly.Romanian:
+		return "ROM-ul aplicației"
 	case firefly.Russian:
 		return "app ROM"
 	case firefly.Spanish:
@@ -126,6 +134,8 @@ func msgData() string {
 		return "data and save files" // TODO
 	case firefly.Polish:
 		return "data and save files" // TODO
+	case firefly.Romanian:
+		return "date și salvează fișierele"
 	case firefly.Russian:
 		return "данные"
 	case firefly.Spanish:
@@ -154,6 +164,8 @@ func msgShots() string {
 		return "screenshots" // TODO
 	case firefly.Polish:
 		return "screenshots" // TODO
+	case firefly.Romanian:
+		return "capturi de ecran"
 	case firefly.Russian:
 		return "скриншоты"
 	case firefly.Spanish:
@@ -182,6 +194,8 @@ func msgCancel() string {
 		return "cancel" // TODO
 	case firefly.Polish:
 		return "cancel" // TODO
+	case firefly.Romanian:
+		return "anulează"
 	case firefly.Russian:
 		return "отменить"
 	case firefly.Spanish:
@@ -210,6 +224,8 @@ func msgRemove() string {
 		return "remove" // TODO
 	case firefly.Polish:
 		return "remove" // TODO
+	return firefly.Romanian:
+		return "elimină"
 	case firefly.Russian:
 		return "удалить"
 	case firefly.Spanish:
