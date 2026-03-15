@@ -38,6 +38,7 @@ type State struct {
 	cursor   int
 	dpad     firefly.DPad4
 	btns     firefly.Buttons
+	peer     firefly.Peer
 }
 
 var state State
@@ -77,6 +78,17 @@ func boot() {
 		state.msg = msgAlreadyRemoved()
 		state.msgTTL = defaultMsgTTL
 	}
+
+	// Set the peer to the current device.
+	// While most games must avoid state drift, in case of the remover app
+	// we DO want every device to run their own copy of the app,
+	// even in multiplayer. It shouldn't be possible from one device
+	// to remove apps and data from another device.
+	for _, peer := range firefly.GetPeers().Slice() {
+		if me.Eq(peer) {
+			state.peer = peer
+		}
+	}
 }
 
 func hasData(authorID, appID string) bool {
@@ -108,8 +120,7 @@ func update() {
 }
 
 func handlePad() {
-	me := firefly.GetMe()
-	pad, _ := firefly.ReadPad(me)
+	pad, _ := firefly.ReadPad(state.peer)
 	dpad := pad.DPad4()
 	released := dpad.JustReleased(state.dpad)
 	state.dpad = dpad
@@ -128,8 +139,7 @@ func handlePad() {
 }
 
 func handleButtons() {
-	me := firefly.GetMe()
-	btns := firefly.ReadButtons(me)
+	btns := firefly.ReadButtons(state.peer)
 	released := btns.JustReleased(state.btns)
 	state.btns = btns
 	if released.W {
