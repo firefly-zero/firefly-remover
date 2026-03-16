@@ -52,7 +52,7 @@ func init() {
 func boot() {
 	me := firefly.GetMe()
 	state.settings = firefly.GetSettings(me)
-	state.font = firefly.LoadFont("font", nil)
+	state.font = firefly.LoadFont("ascii", nil)
 
 	targetFile := firefly.LoadFile("target", nil)
 	if targetFile == nil {
