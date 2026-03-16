@@ -122,9 +122,9 @@ func update() {
 func handlePad() {
 	pad, _ := firefly.ReadPad(state.peer)
 	dpad := pad.DPad4()
-	released := dpad.JustReleased(state.dpad)
+	pressed := dpad.JustPressed(state.dpad)
 	state.dpad = dpad
-	switch released {
+	switch pressed {
 	case firefly.DPad4Down:
 		if state.cursor < len(state.options) {
 			state.cursor++
