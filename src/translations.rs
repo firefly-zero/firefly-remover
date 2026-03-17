@@ -8,6 +8,7 @@ pub enum Message {
     Shots,
     Remove,
     Cancel,
+    Removed,
 }
 
 impl firefly_ui::Translate<'static> for Message {
@@ -21,6 +22,7 @@ impl firefly_ui::Translate<'static> for Message {
             Message::Shots => "screenshots",
             Message::Remove => "remove",
             Message::Cancel => "cancel",
+            Message::Removed => "app is removed",
         }
     }
 

@@ -5,7 +5,7 @@ use firefly_rust::*;
 
 static mut STATE: OnceCell<State> = OnceCell::new();
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum Kind {
     Rom,
     Data,
