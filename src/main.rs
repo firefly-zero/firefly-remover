@@ -6,7 +6,7 @@ mod state;
 mod translations;
 
 use firefly_rust::*;
-use firefly_ui::{Input, InputManager, Translate};
+use firefly_ui::{Input, Translate};
 use state::*;
 use translations::*;
 
@@ -19,6 +19,47 @@ extern "C" fn boot() {
 extern "C" fn update() {
     let state = get_state();
     state.input.update();
+
+    let input = state.input.get();
+    if state.msg.is_some() {
+        if input == Input::Select {
+            quit();
+        }
+        return;
+    }
+
+    match input {
+        Input::Up => {
+            if state.cursor > 0 {
+                state.cursor -= 1;
+            }
+        }
+        Input::Down => {
+            if usize::from(state.cursor) < state.switches.len() {
+                state.cursor += 1;
+            }
+        }
+        Input::Left => state.cursor = 0,
+        Input::Right => state.cursor = state.switches.len() as u8,
+        Input::Select => {
+            let cursor = usize::from(state.cursor);
+            if let Some(switch) = state.switches.get_mut(cursor) {
+                switch.selected = !switch.selected;
+            } else {
+                let any_selected = state.switches.iter().any(|s| s.selected);
+                if any_selected {
+                    remove_app(state);
+                } else {
+                    quit();
+                }
+            }
+        }
+        Input::Back => quit(),
+        Input::None => {}
+    }
+}
+
+fn remove_app(state: &State) {
     // ...
 }
 
@@ -46,7 +87,11 @@ extern "C" fn render() {
         let pressed = pressed && i == state.cursor + 1;
         firefly_ui::draw_switch(i32::from(i), switch.selected, pressed, &font, theme);
 
-        let point = Point::new(20, 25 + 13 * i);
+        let mut point = Point::new(20, 25 + 13 * i);
+        if pressed {
+            point.x += 1;
+            point.y += 1;
+        }
         let name = match switch.kind {
             Kind::Rom => Message::Rom,
             Kind::Data => Message::Data,
@@ -64,7 +109,12 @@ extern "C" fn render() {
         Message::Cancel
     };
     let msg = msg.translate(lang);
-    let point = Point::new(20, 25 + 13 * (state.switches.len() as i32 + 1));
+    let pressed = pressed && usize::from(state.cursor) == state.switches.len();
+    let mut point = Point::new(20, 25 + 13 * (state.switches.len() as i32 + 1));
+    if pressed {
+        point.x += 1;
+        point.y += 1;
+    }
     draw_text(msg, &font, point, theme.accent);
 }
 
