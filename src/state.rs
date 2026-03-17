@@ -45,7 +45,9 @@ pub fn get_state() -> &'static mut State {
 }
 
 pub fn load_state() {
-    let font = load_file_buf("ascii").unwrap();
+    let settings = get_settings(get_me());
+    let encoding = settings.language.encoding();
+    let font = load_file_buf(encoding).unwrap_or_else(|| load_file_buf("ascii").unwrap());
     let target = load_target();
     let mut msg = None;
     if target.is_none() {
@@ -59,7 +61,6 @@ pub fn load_state() {
     if switches.is_empty() && msg.is_none() {
         msg = Some(Message::AppAlreadyRemoved);
     }
-    let settings = get_settings(get_me());
     let state = State {
         font,
         target,
