@@ -1,9 +1,9 @@
 use crate::*;
 use alloc::{string::String, vec::Vec};
-use core::cell::OnceCell;
+use core::mem::MaybeUninit;
 use firefly_rust::*;
 
-static mut STATE: OnceCell<State> = OnceCell::new();
+static mut STATE: MaybeUninit<State> = MaybeUninit::uninit();
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Kind {
@@ -39,7 +39,9 @@ pub struct State {
 
 pub fn get_state() -> &'static mut State {
     #[allow(static_mut_refs)]
-    unsafe { STATE.get_mut() }.unwrap()
+    unsafe {
+        STATE.assume_init_mut()
+    }
 }
 
 pub fn load_state() {
@@ -68,7 +70,9 @@ pub fn load_state() {
         input: firefly_ui::InputManager::new(),
     };
     #[allow(static_mut_refs)]
-    unsafe { STATE.set(state) }.ok().unwrap();
+    unsafe {
+        STATE.write(state)
+    };
 }
 
 fn detect_switches(author_id: &str, app_id: &str) -> Vec<Switch> {
