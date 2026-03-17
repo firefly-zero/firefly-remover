@@ -18,6 +18,7 @@ extern "C" fn boot() {
 #[unsafe(no_mangle)]
 extern "C" fn update() {
     let state = get_state();
+    state.input.update();
     // ...
 }
 
@@ -39,6 +40,8 @@ extern "C" fn render() {
     firefly_ui::draw_title(title, false, &font, theme.accent);
     let pressed = state.input.pressed();
     firefly_ui::draw_cursor((state.cursor + 1).into(), theme, &font, pressed, 0);
+
+    // Draw switches.
     for (switch, i) in state.switches.iter().zip(1u8..) {
         let pressed = pressed && i == state.cursor + 1;
         firefly_ui::draw_switch(i32::from(i), switch.selected, pressed, &font, theme);
@@ -52,6 +55,17 @@ extern "C" fn render() {
         let name = name.translate(lang);
         draw_text(name, &font, point, theme.primary);
     }
+
+    // Draw button.
+    let any_selected = state.switches.iter().any(|s| s.selected);
+    let msg = if any_selected {
+        Message::Remove
+    } else {
+        Message::Cancel
+    };
+    let msg = msg.translate(lang);
+    let point = Point::new(20, 25 + 13 * (state.switches.len() as i32 + 1));
+    draw_text(msg, &font, point, theme.accent);
 }
 
 fn render_message(state: &State, msg: &str) {

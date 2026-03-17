@@ -6,6 +6,8 @@ pub enum Message {
     Rom,
     Data,
     Shots,
+    Remove,
+    Cancel,
 }
 
 impl firefly_ui::Translate<'static> for Message {
@@ -17,6 +19,8 @@ impl firefly_ui::Translate<'static> for Message {
             Message::Rom => "app ROM",
             Message::Data => "data and save files",
             Message::Shots => "screenshots",
+            Message::Remove => "remove",
+            Message::Cancel => "cancel",
         }
     }
 
