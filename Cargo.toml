@@ -5,5 +5,5 @@ rust-version = "1.92.0"
 edition = "2024"
 
 [dependencies]
-firefly-rust = { version = "0.13.1", features = ["alloc", "talc"] }
+firefly-rust = { version = "0.13.1", features = ["alloc", "talc", "sudo"] }
 firefly-ui = "0.2.0"
