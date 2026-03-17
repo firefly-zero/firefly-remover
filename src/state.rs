@@ -85,7 +85,7 @@ fn detect_switches(author_id: &str, app_id: &str) -> Vec<Switch> {
         switches.push(Switch::new(Kind::Data));
     }
     if has_shots(author_id, app_id) {
-        switches.push(Switch::new(Kind::Data));
+        switches.push(Switch::new(Kind::Shots));
     }
     switches
 }
