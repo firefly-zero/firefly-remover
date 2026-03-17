@@ -1,3 +1,4 @@
+use crate::*;
 use alloc::{string::String, vec::Vec};
 use core::cell::OnceCell;
 use firefly_rust::*;
@@ -30,7 +31,7 @@ pub struct State {
     pub font: FileBuf,
     pub target: Option<(String, String)>,
     pub settings: Settings,
-    pub msg: Option<&'static str>,
+    pub msg: Option<Message>,
     pub switches: Vec<Switch>,
     pub cursor: u8,
     pub input: firefly_ui::InputManager,
@@ -46,7 +47,7 @@ pub fn load_state() {
     let target = load_target();
     let mut msg = None;
     if target.is_none() {
-        msg = Some("no app selected");
+        msg = Some(Message::NoAppSelected);
     }
     let switches = if let Some((author_id, app_id)) = &target {
         detect_switches(author_id, app_id)
@@ -54,12 +55,13 @@ pub fn load_state() {
         Vec::new()
     };
     if switches.is_empty() && msg.is_none() {
-        msg = Some("app already removed");
+        msg = Some(Message::AppAlreadyRemoved);
     }
+    let settings = get_settings(get_me());
     let state = State {
         font,
         target,
-        settings: get_settings(get_me()),
+        settings,
         msg,
         switches,
         cursor: 0,
