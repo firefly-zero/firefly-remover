@@ -62,51 +62,51 @@ extern "C" fn update() {
 fn remove_app(state: &mut State) {
     let (author_id, app_id) = state.target.as_ref().unwrap();
     let id = alloc::format!("{author_id}/{app_id}");
-    // Delete ROM and detect if we can remove the whole data dir
-    // or only some subdirs.
-    let mut del_all_data = true;
-    let mut del_etc = false;
-    let mut del_shots = false;
-    for option in &state.switches {
-        if option.kind == Kind::Rom {
-            if option.selected {
-                sudo::remove_dir(&alloc::format!("roms/{id}"));
-                // Reset launcher cache.
-                sudo::remove_file("data/sys/launcher/etc/metas");
-            }
-            continue;
-        }
-        if !option.selected {
-            del_all_data = false;
-            continue;
-        }
-        if option.kind == Kind::Data {
-            del_etc = true
-        }
-        if option.kind == Kind::Shots {
-            del_shots = true
-        }
-    }
+    let rom_path = alloc::format!("roms/{id}");
+    let data_path = alloc::format!("data/{id}");
+    let etc_path = alloc::format!("{data_path}/etc");
+    let shots_path = alloc::format!("{data_path}/shots");
+    let cache_path = "data/sys/launcher/etc/metas";
 
-    state.msg = Some(Message::Removed);
-    if del_all_data {
-        sudo::remove_dir(&alloc::format!("data/{id}"));
+    let delete_all = state.switches.iter().all(|s| s.selected);
+    if delete_all {
+        sudo::remove_dir(&rom_path);
+        sudo::remove_dir(&etc_path);
+        sudo::remove_dir(&shots_path);
+        sudo::remove_dir(&data_path);
+        sudo::remove_file(cache_path);
+        state.msg = Some(Message::Removed);
         return;
     }
 
-    // Delete the app data and stash.
-    if del_etc {
-        sudo::remove_dir(&alloc::format!("data/{id}/etc"));
-        let stash_path = &alloc::format!("roms/{id}/stash");
-        if sudo::get_file_size(stash_path) != 0 {
-            sudo::remove_file(stash_path)
+    for option in &state.switches {
+        if !option.selected {
+            continue;
+        }
+        match option.kind {
+            Kind::Rom => {
+                sudo::remove_dir(&rom_path);
+                sudo::remove_file(cache_path);
+            }
+            Kind::Data => {
+                let files = sudo::DirBuf::list_files(&etc_path);
+                for file_path in files.iter() {
+                    sudo::remove_file(file_path);
+                }
+                let stash_path = &alloc::format!("roms/{id}/stash");
+                if sudo::get_file_size(stash_path) != 0 {
+                    sudo::remove_file(stash_path)
+                }
+            }
+            Kind::Shots => {
+                let files = sudo::DirBuf::list_files(&shots_path);
+                for file_path in files.iter() {
+                    sudo::remove_file(file_path);
+                }
+            }
         }
     }
-
-    // Delete screenshots.
-    if del_shots {
-        sudo::remove_dir(&alloc::format!("roms/{id}/shots"))
-    }
+    state.msg = Some(Message::Removed);
 }
 
 #[unsafe(no_mangle)]
