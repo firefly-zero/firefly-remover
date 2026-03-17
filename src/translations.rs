@@ -1,13 +1,22 @@
 #[derive(Clone, Copy)]
 pub enum Message {
+    /// Title: "What do you want to delete?".
     WhatToDelete,
+    /// Error message: "no app selected".
     NoAppSelected,
+    /// Error message: "app already removed".
     AppAlreadyRemoved,
+    /// Menu option: "app ROM".
     Rom,
+    /// Menu option: "data and save files".
     Data,
+    /// Menu option: "screenshots".
     Shots,
+    /// Button: "remove".
     Remove,
+    /// Button: "cancel".
     Cancel,
+    /// Success message: "app is removed".
     Removed,
 }
 
@@ -47,7 +56,17 @@ impl firefly_ui::Translate<'static> for Message {
     }
 
     fn translate_romanian(&self) -> &'static str {
-        self.translate_english()
+        match self {
+            Message::WhatToDelete => "What do you want to delete?", // TODO
+            Message::NoAppSelected => "nicio aplicație selectată",
+            Message::AppAlreadyRemoved => "aplicație deja dezinstalată",
+            Message::Rom => "ROM-ul aplicației",
+            Message::Data => "date și salvează fișierele",
+            Message::Shots => "capturi de ecran",
+            Message::Remove => "elimină",
+            Message::Cancel => "anulează",
+            Message::Removed => "aplicația e dezinstalată",
+        }
     }
 
     fn translate_russian(&self) -> &'static str {
