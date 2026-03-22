@@ -24,6 +24,8 @@ pub enum Message {
     Remove,
     /// Button: "cancel".
     Cancel,
+    /// Button: "okay".
+    Ok,
 }
 
 impl firefly_ui::Translate<'static> for Message {
@@ -41,6 +43,7 @@ impl firefly_ui::Translate<'static> for Message {
             Message::Scores => "scores",
             Message::Remove => "remove",
             Message::Cancel => "cancel",
+            Message::Ok => "okay",
         }
     }
 
@@ -78,6 +81,7 @@ impl firefly_ui::Translate<'static> for Message {
             Message::Scores => "scores",       // TODO
             Message::Remove => "elimină",
             Message::Cancel => "anulează",
+            Message::Ok => "okay", // TODO
         }
     }
 
@@ -95,6 +99,7 @@ impl firefly_ui::Translate<'static> for Message {
             Message::Scores => "результаты",
             Message::Remove => "удалить",
             Message::Cancel => "отменить",
+            Message::Ok => "ок",
         }
     }
 

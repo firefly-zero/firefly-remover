@@ -209,8 +209,16 @@ extern "C" fn render() {
 fn render_message(state: &State, msg: &str) {
     let theme = state.settings.theme;
     let font = state.font.as_font();
-    let x = (WIDTH - font.line_width_utf8(msg) as i32) / 2;
-    let y = (HEIGHT - i32::from(font.char_height())) / 2;
-    let point = Point::new(x, y);
+    firefly_ui::draw_title(msg, false, &font, theme.accent);
+
+    let pressed = state.input.pressed();
+    firefly_ui::draw_cursor(1, theme, &font, pressed, 0);
+
+    let mut point = Point::new(20, 25 + 13);
+    if pressed {
+        point.x += 1;
+        point.y += 1;
+    }
+    let msg = Message::Ok.translate(state.settings.language);
     draw_text(msg, &font, point, theme.accent);
 }
