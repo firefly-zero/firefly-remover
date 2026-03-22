@@ -14,6 +14,10 @@ pub enum Message {
     Data,
     /// Menu option: "screenshots".
     Shots,
+    /// Menu option: "achievements".
+    Badges,
+    /// Menu option: "scores".
+    Scores,
     /// Button: "remove".
     Remove,
     /// Button: "cancel".
@@ -30,6 +34,8 @@ impl firefly_ui::Translate<'static> for Message {
             Message::Rom => "app ROM",
             Message::Data => "data and save files",
             Message::Shots => "screenshots",
+            Message::Badges => "achievements",
+            Message::Scores => "scores",
             Message::Remove => "remove",
             Message::Cancel => "cancel",
         }
@@ -64,6 +70,8 @@ impl firefly_ui::Translate<'static> for Message {
             Message::Rom => "ROM-ul aplicației",
             Message::Data => "date și salvează fișierele",
             Message::Shots => "capturi de ecran",
+            Message::Badges => "achievements", // TODO
+            Message::Scores => "scores",       // TODO
             Message::Remove => "elimină",
             Message::Cancel => "anulează",
         }
@@ -78,6 +86,8 @@ impl firefly_ui::Translate<'static> for Message {
             Message::Rom => "ROM приложения",
             Message::Data => "данные",
             Message::Shots => "скриншоты",
+            Message::Badges => "achievements", // TODO
+            Message::Scores => "scores",       // TODO
             Message::Remove => "удалить",
             Message::Cancel => "отменить",
         }

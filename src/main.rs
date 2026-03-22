@@ -6,6 +6,7 @@ mod state;
 mod translations;
 
 use firefly_rust::*;
+use firefly_types::{Encode, Stats};
 use firefly_ui::{Input, Translate};
 use state::*;
 use translations::*;
@@ -66,6 +67,7 @@ fn remove_app(state: &mut State) {
     let data_path = alloc::format!("data/{id}");
     let etc_path = alloc::format!("{data_path}/etc");
     let shots_path = alloc::format!("{data_path}/shots");
+    let stats_path = alloc::format!("{data_path}/stats");
     let cache_path = "data/sys/launcher/etc/metas";
 
     let delete_all = state.switches.iter().all(|s| s.selected);
@@ -104,9 +106,38 @@ fn remove_app(state: &mut State) {
                     sudo::remove_file(file_path);
                 }
             }
+            Kind::Badges => {
+                reset_stats(&stats_path, true, false);
+            }
+            Kind::Scores => {
+                reset_stats(&stats_path, false, true);
+            }
         }
     }
     state.msg = Some(Message::Removed);
+}
+
+fn reset_stats(stats_path: &str, drop_badges: bool, drop_scores: bool) {
+    let buf = sudo::load_file_buf(stats_path).unwrap();
+    let mut stats = Stats::decode(buf.as_bytes()).unwrap();
+    if drop_badges {
+        for badge in stats.badges.iter_mut() {
+            badge.done = 0;
+        }
+    }
+    if drop_scores {
+        for board in &mut stats.scores {
+            for score in board.me.iter_mut() {
+                *score = 0;
+            }
+            for score in board.friends.iter_mut() {
+                score.index = 0;
+                score.score = 0;
+            }
+        }
+    }
+    let raw = stats.encode_vec().unwrap();
+    sudo::dump_file(stats_path, &raw);
 }
 
 #[unsafe(no_mangle)]
@@ -142,6 +173,8 @@ extern "C" fn render() {
             Kind::Rom => Message::Rom,
             Kind::Data => Message::Data,
             Kind::Shots => Message::Shots,
+            Kind::Badges => Message::Badges,
+            Kind::Scores => Message::Scores,
         };
         let name = name.translate(lang);
         draw_text(name, &font, point, theme.primary);

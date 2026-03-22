@@ -1,7 +1,8 @@
 use crate::*;
-use alloc::{string::String, vec::Vec};
+use alloc::{string::String, vec, vec::Vec};
 use core::mem::MaybeUninit;
 use firefly_rust::*;
+use firefly_types::{Encode, Stats};
 
 static mut STATE: MaybeUninit<State> = MaybeUninit::uninit();
 
@@ -10,6 +11,8 @@ pub enum Kind {
     Rom,
     Data,
     Shots,
+    Badges,
+    Scores,
 }
 
 #[derive(Clone, Copy)]
@@ -88,6 +91,13 @@ fn detect_switches(author_id: &str, app_id: &str) -> Vec<Switch> {
     if has_shots(author_id, app_id) {
         switches.push(Switch::new(Kind::Shots));
     }
+    let (has_badges, has_scores) = has_stats(author_id, app_id);
+    if has_badges {
+        switches.push(Switch::new(Kind::Badges));
+    }
+    if has_scores {
+        switches.push(Switch::new(Kind::Scores));
+    }
     switches
 }
 
@@ -106,6 +116,26 @@ fn has_shots(author_id: &str, app_id: &str) -> bool {
     let shots_path = alloc::format!("data/{author_id}/{app_id}/shots");
     let files = sudo::DirBuf::list_files(&shots_path);
     files.iter().next().is_some()
+}
+
+fn has_stats(author_id: &str, app_id: &str) -> (bool, bool) {
+    let path = alloc::format!("data/{author_id}/{app_id}/stats");
+    let size = sudo::get_file_size(&path);
+    if size == 0 {
+        log_error("app has no stats file");
+        return (false, false);
+    }
+    let mut raw = vec![0; size];
+    sudo::load_file(&path, &mut raw);
+    let Ok(stats) = Stats::decode(&raw) else {
+        log_error("app stats cannot be decoded");
+        return (false, false);
+    };
+    let has_badges = stats.badges.iter().any(|b| b.done != 0);
+    let has_scores = stats.scores.iter().any(|board| {
+        board.me.iter().any(|s| *s != 0) || board.friends.iter().any(|s| s.score != 0)
+    });
+    (has_badges, has_scores)
 }
 
 /// Read the ID of the app to be removed.
