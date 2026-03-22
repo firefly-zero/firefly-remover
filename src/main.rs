@@ -83,6 +83,7 @@ fn remove_app(state: &mut State) {
         sudo::remove_dir(&data_path);
         sudo::remove_file(cache_path);
         state.msg = Some(Message::Removed);
+        state.fire = Some(Fire::new());
         return;
     }
 
@@ -129,6 +130,7 @@ fn remove_app(state: &mut State) {
         Message::Cleared
     };
     state.msg = Some(msg);
+    state.fire = Some(Fire::new());
 }
 
 fn reset_stats(stats_path: &str, drop_badges: bool, drop_scores: bool) {

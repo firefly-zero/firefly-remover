@@ -4,7 +4,7 @@ pub enum Message {
     WhatToDelete,
     /// Error message: "no app selected".
     NoAppSelected,
-    /// Error message: "app already removed".
+    /// Error message: "app is already removed".
     AppAlreadyRemoved,
     /// Success message: "app is removed".
     Removed,
@@ -33,7 +33,7 @@ impl firefly_ui::Translate<'static> for Message {
         match self {
             Message::WhatToDelete => "What do you want to delete?",
             Message::NoAppSelected => "no app selected",
-            Message::AppAlreadyRemoved => "app already removed",
+            Message::AppAlreadyRemoved => "app is already removed",
             Message::Removed => "app is removed",
             Message::Cleared => "data is cleared",
             Message::Rom => "app ROM",

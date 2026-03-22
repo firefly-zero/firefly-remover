@@ -9,8 +9,8 @@ pub struct Fire {
 
 impl Fire {
     pub fn new() -> Self {
-        let mut particles = Vec::with_capacity(512);
-        for _ in 0..512 {
+        let mut particles = Vec::with_capacity(800);
+        for _ in 0..particles.capacity() {
             let mut particle = Particle::new();
             particle.r = rand_f32() * 8.;
             particles.push(particle);
@@ -52,7 +52,7 @@ struct Particle {
 impl Particle {
     fn new() -> Self {
         Self {
-            x: 120. + (rand_f32() * 100.) - 50.,
+            x: rand_f32() * 240.,
             y: 150. + rand_f32() * 8.,
             s: 0.3 + rand_f32(),
             r: 12.,

@@ -73,7 +73,7 @@ pub fn load_state() {
         switches,
         cursor: 0,
         input: firefly_ui::InputManager::new(),
-        fire: Some(Fire::new()),
+        fire: None,
     };
     #[allow(static_mut_refs)]
     unsafe {
