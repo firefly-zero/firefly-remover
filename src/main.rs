@@ -2,9 +2,11 @@
 #![no_main]
 extern crate alloc;
 
+mod fire;
 mod state;
 mod translations;
 
+use fire::*;
 use firefly_rust::*;
 use firefly_types::{Encode, Stats};
 use firefly_ui::{Input, Translate};
@@ -20,6 +22,9 @@ extern "C" fn boot() {
 extern "C" fn update() {
     let state = get_state();
     state.input.update();
+    if let Some(fire) = &mut state.fire {
+        fire.update()
+    }
 
     let input = state.input.get();
     if state.msg.is_some() {
@@ -206,7 +211,7 @@ extern "C" fn render() {
     draw_text(msg, &font, point, theme.accent);
 }
 
-fn render_message(state: &State, msg: &str) {
+fn render_message(state: &mut State, msg: &str) {
     let theme = state.settings.theme;
     let font = state.font.as_font();
     firefly_ui::draw_title(msg, false, &font, theme.accent);
@@ -221,4 +226,8 @@ fn render_message(state: &State, msg: &str) {
     }
     let msg = Message::Ok.translate(state.settings.language);
     draw_text(msg, &font, point, theme.accent);
+
+    if let Some(fire) = &mut state.fire {
+        fire.draw()
+    }
 }

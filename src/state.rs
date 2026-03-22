@@ -38,6 +38,7 @@ pub struct State {
     pub switches: Vec<Switch>,
     pub cursor: u8,
     pub input: firefly_ui::InputManager,
+    pub fire: Option<Fire>,
 }
 
 pub fn get_state() -> &'static mut State {
@@ -72,6 +73,7 @@ pub fn load_state() {
         switches,
         cursor: 0,
         input: firefly_ui::InputManager::new(),
+        fire: Some(Fire::new()),
     };
     #[allow(static_mut_refs)]
     unsafe {
