@@ -81,6 +81,7 @@ fn remove_app(state: &mut State) {
         return;
     }
 
+    let mut rom_removed = false;
     for option in &state.switches {
         if !option.selected {
             continue;
@@ -89,6 +90,7 @@ fn remove_app(state: &mut State) {
             Kind::Rom => {
                 sudo::remove_dir(&rom_path);
                 sudo::remove_file(cache_path);
+                rom_removed = true
             }
             Kind::Data => {
                 let files = sudo::DirBuf::list_files(&etc_path);
@@ -116,7 +118,12 @@ fn remove_app(state: &mut State) {
             }
         }
     }
-    state.msg = Some(Message::Removed);
+    let msg = if rom_removed {
+        Message::Removed
+    } else {
+        Message::Cleared
+    };
+    state.msg = Some(msg);
 }
 
 fn reset_stats(stats_path: &str, drop_badges: bool, drop_scores: bool) {

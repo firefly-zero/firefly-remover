@@ -8,6 +8,8 @@ pub enum Message {
     AppAlreadyRemoved,
     /// Success message: "app is removed".
     Removed,
+    /// Success message: "data is cleared".
+    Cleared,
     /// Menu option: "app ROM".
     Rom,
     /// Menu option: "data and save files".
@@ -31,6 +33,7 @@ impl firefly_ui::Translate<'static> for Message {
             Message::NoAppSelected => "no app selected",
             Message::AppAlreadyRemoved => "app already removed",
             Message::Removed => "app is removed",
+            Message::Cleared => "data is cleared",
             Message::Rom => "app ROM",
             Message::Data => "data and save files",
             Message::Shots => "screenshots",
@@ -67,6 +70,7 @@ impl firefly_ui::Translate<'static> for Message {
             Message::NoAppSelected => "nicio aplicație selectată",
             Message::AppAlreadyRemoved => "aplicație deja dezinstalată",
             Message::Removed => "aplicația e dezinstalată",
+            Message::Cleared => "data is cleared", // TODO
             Message::Rom => "ROM-ul aplicației",
             Message::Data => "date și salvează fișierele",
             Message::Shots => "capturi de ecran",
@@ -83,11 +87,12 @@ impl firefly_ui::Translate<'static> for Message {
             Message::NoAppSelected => "приложение не выбрано",
             Message::AppAlreadyRemoved => "приложение уже удалено",
             Message::Removed => "приложение удалено",
+            Message::Cleared => "данные удалены",
             Message::Rom => "ROM приложения",
             Message::Data => "данные",
             Message::Shots => "скриншоты",
-            Message::Badges => "achievements", // TODO
-            Message::Scores => "scores",       // TODO
+            Message::Badges => "достижения",
+            Message::Scores => "результаты",
             Message::Remove => "удалить",
             Message::Cancel => "отменить",
         }
