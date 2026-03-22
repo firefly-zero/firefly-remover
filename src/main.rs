@@ -92,8 +92,9 @@ fn remove_app(state: &mut State) {
             }
             Kind::Data => {
                 let files = sudo::DirBuf::list_files(&etc_path);
-                for file_path in files.iter() {
-                    sudo::remove_file(file_path);
+                for file_name in files.iter() {
+                    let file_path = alloc::format!("{shots_path}/{file_name}");
+                    sudo::remove_file(&file_path);
                 }
                 let stash_path = &alloc::format!("roms/{id}/stash");
                 if sudo::get_file_size(stash_path) != 0 {
@@ -102,8 +103,9 @@ fn remove_app(state: &mut State) {
             }
             Kind::Shots => {
                 let files = sudo::DirBuf::list_files(&shots_path);
-                for file_path in files.iter() {
-                    sudo::remove_file(file_path);
+                for file_name in files.iter() {
+                    let file_path = alloc::format!("{shots_path}/{file_name}");
+                    sudo::remove_file(&file_path);
                 }
             }
             Kind::Badges => {
