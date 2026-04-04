@@ -1,6 +1,6 @@
 # firefly-remover
 
-System app for [Firefly Zero](https://fireflyzero.com/) for removing apps. Written in Go using [the official Go SDK](https://github.com/firefly-zero/firefly-go).
+System app for [Firefly Zero](https://fireflyzero.com/) for removing apps.
 
 ## Installation
 
