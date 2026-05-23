@@ -8,6 +8,7 @@ mod translations;
 
 use fire::*;
 use firefly_rust::*;
+use firefly_sudo::sudo;
 use firefly_types::{Encode, Stats};
 use firefly_ui::{Input, Translate};
 use state::*;
@@ -135,7 +136,7 @@ fn remove_app(state: &mut State) {
 
 fn reset_stats(stats_path: &str, drop_badges: bool, drop_scores: bool) {
     let buf = sudo::load_file_buf(stats_path).unwrap();
-    let mut stats = Stats::decode(buf.as_bytes()).unwrap();
+    let mut stats = Stats::decode(&buf.into_bytes()).unwrap();
     if drop_badges {
         for badge in stats.badges.iter_mut() {
             badge.done = 0;
@@ -161,7 +162,7 @@ extern "C" fn render() {
     let state = get_state();
     let theme = state.settings.theme;
     let lang = state.settings.language;
-    let font = state.font.as_font();
+    let font = &state.font;
     firefly_ui::draw_bg(theme);
 
     if let Some(msg) = state.msg {
@@ -171,14 +172,14 @@ extern "C" fn render() {
     }
 
     let title = Message::WhatToDelete.translate(lang);
-    firefly_ui::draw_title(title, false, &font, theme.accent);
+    firefly_ui::draw_title(title, false, font, theme.accent);
     let pressed = state.input.pressed();
-    firefly_ui::draw_cursor((state.cursor + 1).into(), theme, &font, pressed, 0);
+    firefly_ui::draw_cursor((state.cursor + 1).into(), theme, font, pressed, 0);
 
     // Draw switches.
     for (switch, i) in state.switches.iter().zip(1u8..) {
         let pressed = pressed && i == state.cursor + 1;
-        firefly_ui::draw_switch(i32::from(i), switch.selected, pressed, &font, theme);
+        firefly_ui::draw_switch(i32::from(i), switch.selected, pressed, font, theme);
 
         let mut point = Point::new(20, 25 + 13 * i);
         if pressed {
@@ -193,7 +194,7 @@ extern "C" fn render() {
             Kind::Scores => Message::Scores,
         };
         let name = name.translate(lang);
-        draw_text(name, &font, point, theme.primary);
+        draw_text(name, font, point, theme.primary);
     }
 
     // Draw button.
@@ -210,16 +211,16 @@ extern "C" fn render() {
         point.x += 1;
         point.y += 1;
     }
-    draw_text(msg, &font, point, theme.accent);
+    draw_text(msg, font, point, theme.accent);
 }
 
 fn render_message(state: &mut State, msg: &str) {
     let theme = state.settings.theme;
-    let font = state.font.as_font();
-    firefly_ui::draw_title(msg, false, &font, theme.accent);
+    let font = &state.font;
+    firefly_ui::draw_title(msg, false, font, theme.accent);
 
     let pressed = state.input.pressed();
-    firefly_ui::draw_cursor(1, theme, &font, pressed, 0);
+    firefly_ui::draw_cursor(1, theme, font, pressed, 0);
 
     let mut point = Point::new(20, 25 + 13);
     if pressed {
@@ -227,7 +228,7 @@ fn render_message(state: &mut State, msg: &str) {
         point.y += 1;
     }
     let msg = Message::Ok.translate(state.settings.language);
-    draw_text(msg, &font, point, theme.accent);
+    draw_text(msg, font, point, theme.accent);
 
     if let Some(fire) = &mut state.fire {
         fire.draw()

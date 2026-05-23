@@ -31,7 +31,7 @@ impl Switch {
 }
 
 pub struct State {
-    pub font: FileBuf,
+    pub font: FontBuf,
     pub target: Option<(String, String)>,
     pub settings: Settings,
     pub msg: Option<Message>,
@@ -66,7 +66,7 @@ pub fn load_state() {
         msg = Some(Message::AppAlreadyRemoved);
     }
     let state = State {
-        font,
+        font: font.into(),
         target,
         settings,
         msg,
@@ -143,7 +143,7 @@ fn has_stats(author_id: &str, app_id: &str) -> (bool, bool) {
 /// Read the ID of the app to be removed.
 fn load_target() -> Option<(String, String)> {
     let raw = load_file_buf("target")?;
-    let raw = raw.as_bytes();
+    let raw = raw.into_bytes();
     let raw = raw.trim_ascii();
     let raw = alloc::str::from_utf8(raw).ok()?;
     let (author, app) = split_by(raw, '.')?;
