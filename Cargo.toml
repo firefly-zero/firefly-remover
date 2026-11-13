@@ -1,17 +1,17 @@
 [package]
 name = "remover"
-version = "0.1.1"
-rust-version = "1.95.0"
+version = "0.1.2"
+rust-version = "1.100.0"
 edition = "2024"
 
 [dependencies]
-firefly-rust = { version = "0.14.0", features = ["talc"] }
-firefly-sudo = { version = "0.14.0", features = ["alloc"] }
-firefly-ui = "0.3.1"
-firefly-types = "0.10.0"
+firefly-rust = { version = "0.17.1", features = ["talc"] }
+firefly-sudo = { version = "0.14.5", features = ["alloc"] }
+firefly-ui = "0.3.3"
+firefly-types = "0.12.1"
 
 # https://github.com/johnthagen/min-sized-rust
 [profile.release]
-strip = true    # Automatically strip symbols from the binary.
-opt-level = "s" # Optimize for speed.
-lto = true      # Enable link-time optimization
+strip = true  # Automatically strip symbols from the binary.
+opt-level = 3 # Optimize for speed.
+lto = true    # Enable link-time optimization
